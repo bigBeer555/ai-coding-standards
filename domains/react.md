@@ -1,6 +1,6 @@
 # React Rules
 
-本文件适用于 React 组件、Hooks、状态管理和 JSX 逻辑任务。使用前必须同时遵守 `core/scope.md`；涉及脚本逻辑时必须同时遵守 `core/coding.md`。
+本文件适用于 React 组件、Hooks、状态管理和 JSX 逻辑任务。使用前必须同时遵守 `core/scope.md`；涉及脚本逻辑时必须同时遵守 `core/coding.md` 和 `core/comments.md`；仅涉及 JSX 模板结构或 HTML 结构时只需遵守 `core/comments.md`。
 
 ## 基础原则
 
@@ -24,4 +24,4 @@
 
 ## 注释
 
-React 代码中的注释同样遵守 `core/coding.md` 的中文注释规则。
+React 代码中的注释同样遵守 `core/comments.md` 的中文注释规则。

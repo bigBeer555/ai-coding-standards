@@ -1,6 +1,6 @@
 # Vue3 Rules
 
-本文件适用于 Vue3 组件、页面、组合式函数、状态管理和模板逻辑任务。使用前必须同时遵守 `core/scope.md`；涉及脚本逻辑时必须同时遵守 `core/coding.md`。
+本文件适用于 Vue3 组件、页面、组合式函数、状态管理和模板逻辑任务。使用前必须同时遵守 `core/scope.md`；涉及脚本逻辑时必须同时遵守 `core/coding.md` 和 `core/comments.md`；仅涉及 template 模板或 HTML 结构时只需遵守 `core/comments.md`。
 
 ## 默认技术栈
 

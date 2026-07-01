@@ -8,12 +8,13 @@
 
 ## Load By Task
 
-- 涉及 JS / TS / 业务逻辑 / 接口 / 状态 / 组件脚本：加载 `core/coding.md`。
+- 涉及 JS / TS / 业务逻辑 / 接口 / 状态 / 组件脚本：加载 `core/coding.md` 和 `core/comments.md`。
+- 仅涉及 template 模板或 HTML 代码：只加载 `core/comments.md`，不加载 `core/coding.md`。
 - 存在多个方案、删除、重构、替换、兼容、扩大范围：加载 `core/decision.md`。
-- 代码生成、代码修改、代码审查前自检：加载 `core/review.md`。
-- Vue3 任务：加载 `domains/vue.md`。
-- UniApp 任务：加载 `domains/uniapp.md` 和 `domains/vue.md`。
-- React 任务：加载 `domains/react.md`。
+- 代码生成、代码修改、代码审查前自检：涉及 JS / TS / 业务逻辑 / 接口 / 状态 / 组件脚本时加载 `core/review.md`。
+- Vue3 且涉及脚本、状态、接口、组件逻辑：加载 `domains/vue.md`。
+- UniApp 且涉及脚本、状态、接口、组件逻辑或跨端行为：加载 `domains/uniapp.md` 和 `domains/vue.md`。
+- React 且涉及脚本、状态、Hooks、组件逻辑：加载 `domains/react.md`。
 - 性能优化任务：加载 `domains/performance.md`。
 - 架构设计任务：加载 `domains/architecture.md`。
 - Git 操作任务：加载 `domains/git.md`。
@@ -23,6 +24,7 @@
 ## Skip Rules
 
 - 纯页面视觉、纯 CSS / 样式调整、文档调整：不强制加载 `core/coding.md`，除非涉及脚本逻辑。
+- 仅修改 template 模板或 HTML 注释时，遵守 `core/comments.md` 即可。
 - 普通 Bug 修复：不默认加载 `domains/architecture.md` 或 `domains/performance.md`，除非用户明确要求。
 
 ## Priority
@@ -32,5 +34,6 @@
 1. `core/scope.md`
 2. `core/decision.md`
 3. `core/coding.md`
-4. 相关 `domains/*.md`
-5. `domains/output.md`
+4. `core/comments.md`
+5. 相关 `domains/*.md`
+6. `domains/output.md`
