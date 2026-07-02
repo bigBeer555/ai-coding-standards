@@ -1,11 +1,11 @@
 {
-  "name": "ai-coding-standards",
+  "name": "ai-front-standards",
   "version": "0.1.0",
   "description": "Shared AI coding standards for Cursor, OpenCode and Claude Code agents.",
   "license": "MIT",
   "type": "commonjs",
   "bin": {
-    "ai-rules": "./bin/ai-rules.js"
+    "ai-rules": "bin/ai-rules.js"
   },
   "files": [
     "README.md",
