@@ -2,10 +2,95 @@
 
 这是 Cursor、OpenCode、Claude Code 等 Agent 共用的规范库。规则正文只维护一份，适配器只负责声明加载入口，避免多端复制导致规范漂移。
 
+本仓库同时提供 `ai-rules` 命令，可从 GitHub 全局安装后，把规范安装到任意项目。
+
+## 全局安装
+
+从 GitHub 仓库安装：
+
+```bash
+npm install -g github:<github-user>/ai-coding-standards
+```
+
+如果已经发布到 npm，也可以使用：
+
+```bash
+npm install -g ai-coding-standards
+```
+
+验证安装：
+
+```bash
+ai-rules --version
+ai-rules list
+```
+
+## CLI 用法
+
+查看可用规则和适配器：
+
+```bash
+ai-rules list
+```
+
+查看某个规则文件：
+
+```bash
+ai-rules show core/scope.md
+```
+
+安装到 Cursor 项目级规则：
+
+```bash
+ai-rules install cursor-project --target .
+```
+
+安装到 OpenCode 项目：
+
+```bash
+ai-rules install opencode --target .
+```
+
+生成 Cursor 用户级规则文件：
+
+```bash
+ai-rules install cursor-user --target .
+```
+
+说明：
+
+- 规则正文会安装到目标项目的 `.ai-coding-standards/` 目录。
+- Cursor 项目入口会写入 `.cursor/rules/ai-coding-standards.mdc`。
+- OpenCode 入口会写入 `AGENTS.md`。
+- 默认不覆盖已存在的入口文件和规则正文；确实需要覆盖时追加 `--force`。
+
+## 上传到 GitHub
+
+首次关联远程仓库：
+
+```bash
+git remote add origin https://github.com/<github-user>/ai-coding-standards.git
+git branch -M main
+git push -u origin main
+```
+
+后续更新：
+
+```bash
+git add .
+git commit -m "feat: add installable CLI"
+git push
+```
+
 ## 项目结构
 
 ```txt
 ai-coding-standards/
+├─ package.json
+│  └─ Node 包配置，声明 ai-rules 可执行命令。
+├─ bin/
+│  └─ ai-rules.js
+│     └─ CLI 入口，负责查看规则和安装适配器。
 ├─ README.md
 │  └─ 项目说明、加载策略、目录结构和维护原则。
 ├─ core/
