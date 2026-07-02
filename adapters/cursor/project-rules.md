@@ -15,6 +15,8 @@ Conditional rules:
 - Load `domains/react.md` for React script, state, Hooks, or component logic work.
 - Load `domains/performance.md` only for explicit performance tasks.
 - Load `domains/architecture.md` only for explicit architecture tasks.
+- Load `domains/git.md` for Git operations.
+- Load `domains/interview.md` for interview or explanation tasks.
 - Load `domains/output.md` for final replies.
 
 Do not copy rule text into adapter files. Update the shared files instead.

@@ -65,6 +65,11 @@ ai-coding-standards/
 
 `domains/` 存放按技术栈或任务场景加载的专项规则，只在任务命中时加载。
 
+当前规则分为两类：
+
+- 技术栈规则：`vue.md`、`uniapp.md`、`react.md`。
+- 任务场景规则：`performance.md`、`architecture.md`、`git.md`、`interview.md`、`output.md`。
+
 | 文件 | 作用 | 典型加载场景 |
 | --- | --- | --- |
 | `domains/vue.md` | 约束 Vue3、Composition API、Props、Emit、Computed、Watch、Template、Pinia、接口调用。 | Vue3 脚本、状态、接口、组件逻辑。 |
@@ -125,9 +130,8 @@ flowchart TD
 ## 目录设计
 
 - `core/`: 所有项目都可复用的底线规则。
-- `domains/`: 按任务、技术栈或场景加载的专项规则。
+- `domains/`: 按技术栈或任务场景加载的专项规则。
 - `adapters/`: 不同 Agent 工具的入口说明，只引用共享规则，不复制规则正文。
-- `rule.md`: 原始合集文件，作为迁移来源和历史参考保留。
 
 ## 核心加载策略
 
@@ -172,3 +176,4 @@ flowchart TD
 - 新增通用底线规则放入 `core/`。
 - 新增技术栈或场景规则放入 `domains/`。
 - Cursor / OpenCode 等工具入口只写加载策略，不复制规范正文。
+- README 中的加载策略是权威说明；修改加载策略时必须同步检查所有 `adapters/` 入口文件。
