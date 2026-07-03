@@ -1,21 +1,26 @@
 # AI Rules Framework
 
-这是 Cursor、OpenCode、Claude Code 等 Agent 共用的规范库。规则正文只维护一份，适配器只负责声明加载入口，避免多端复制导致规范漂移。
+这是 Cursor、OpenCode、Claude Code、Gemini CLI、GitHub Copilot、Windsurf 等 Agent 共用的编码规范库。
 
-本仓库同时提供 `ai-rules` 命令，可从 GitHub 全局安装后，把规范安装到任意项目。
+核心原则：
 
-## 全局安装
+- 规则正文只维护一份：`core/` 和 `domains/`。
+- 不同 Agent 只写入口适配器：`adapters/`。
+- npm 包只负责分发规则，不在安装时自动修改用户环境。
+- 用户通过 `ai-rules` 显式安装项目级或全局级规则。
 
-从 GitHub 仓库安装：
+## 安装
+
+从 npm 安装：
 
 ```bash
-npm install -g github:<github-user>/ai-coding-standards
+npm install -g ai-front-standards
 ```
 
-如果已经发布到 npm，也可以使用：
+从 GitHub 安装：
 
 ```bash
-npm install -g ai-coding-standards
+npm install -g github:bigBeer555/ai-coding-standards
 ```
 
 验证安装：
@@ -25,200 +30,212 @@ ai-rules --version
 ai-rules list
 ```
 
-## CLI 用法
+## 指定安装某个 Agent
 
-查看可用规则和适配器：
+默认会安装当前范围支持的全部 Agent 入口。只想安装某一个或几个时，可以在命令后追加 Agent 名称：
 
 ```bash
-ai-rules list
+ai-rules install project cursor --target .
+ai-rules install project claude gemini --target .
+ai-rules install global cursor
+ai-rules install all cursor claude --target .
 ```
 
-查看某个规则文件：
+也可以用参数形式：
 
 ```bash
-ai-rules show core/scope.md
+ai-rules install project --agent cursor,claude --target .
+ai-rules install project --model gemini --target .
+ai-rules install global --agent opencode
 ```
 
-安装到 Cursor 项目级规则：
+当前支持的 Agent 名称：
 
-```bash
-ai-rules install cursor-project --target .
-```
-
-安装到 OpenCode 项目：
-
-```bash
-ai-rules install opencode --target .
-```
-
-生成 Cursor 用户级规则文件：
-
-```bash
-ai-rules install cursor-user --target .
+```txt
+cursor
+opencode
+claude
+gemini
+copilot
+windsurf
 ```
 
 说明：
 
-- 规则正文会安装到目标项目的 `.ai-coding-standards/` 目录。
-- Cursor 项目入口会写入 `.cursor/rules/ai-coding-standards.mdc`。
-- OpenCode 入口会写入 `AGENTS.md`。
-- 默认不覆盖已存在的入口文件和规则正文；确实需要覆盖时追加 `--force`。
+- `cursor` 项目级会同时写入 `.cursor/rules/ai-coding-standards.mdc` 和 `.cursorrules`。
+- `copilot` 目前只支持项目级入口 `.github/copilot-instructions.md`，不提供全局级入口。
+- 不指定 Agent 时，仍按原逻辑安装当前范围支持的全部入口。
+- 规则正文始终会完整复制到 `.ai-coding-standards/`，入口文件只决定哪些 Agent 会自动读取规范。
 
-## 上传到 GitHub
+## 项目级使用
 
-首次关联远程仓库：
-
-```bash
-git remote add origin https://github.com/<github-user>/ai-coding-standards.git
-git branch -M main
-git push -u origin main
-```
-
-后续更新：
+在目标项目根目录执行：
 
 ```bash
-git add .
-git commit -m "feat: add installable CLI"
-git push
+ai-rules install project --target .
 ```
+
+也可以直接通过 npx 使用：
+
+```bash
+npx ai-front-standards install project --target .
+```
+
+执行后会写入：
+
+```txt
+目标项目/
+├─ .ai-coding-standards/
+│  ├─ core/
+│  └─ domains/
+├─ .cursor/rules/ai-coding-standards.mdc
+├─ .cursorrules
+├─ AGENTS.md
+├─ CLAUDE.md
+├─ GEMINI.md
+├─ .github/copilot-instructions.md
+└─ .windsurfrules
+```
+
+适合团队项目。规则随项目走，支持的 Agent 在该项目内编码时会读取对应入口。
+
+## 全局级使用
+
+```bash
+ai-rules install global
+```
+
+执行后会写入：
+
+```txt
+用户目录/
+├─ .ai-coding-standards/
+│  ├─ core/
+│  └─ domains/
+├─ .cursor/rules/ai-coding-standards.md
+├─ .config/opencode/AGENTS.md
+├─ .claude/CLAUDE.md
+├─ GEMINI.md
+└─ .windsurfrules
+```
+
+适合个人机器长期使用。不同 Agent 的全局规则读取能力不完全一致；项目级安装仍是团队协作的推荐方式。
+
+## 一次安装项目级和全局级
+
+```bash
+ai-rules install all --target .
+```
+
+## 同步规则正文
+
+升级 npm 包后，同步已安装的规则正文：
+
+```bash
+ai-rules sync project --target .
+ai-rules sync global
+ai-rules sync all --target .
+```
+
+`sync` 只更新 `.ai-coding-standards/` 下的规则正文，不覆盖已有 Agent 入口文件。
+
+## 覆盖入口文件
+
+默认不覆盖已存在的 Agent 入口文件。确实需要覆盖时追加：
+
+```bash
+ai-rules install project --target . --force
+ai-rules install global --force
+```
+
+## 检查安装状态
+
+```bash
+ai-rules doctor --target .
+```
+
+会检查当前项目和当前用户目录中的规则正文、项目级入口、全局级入口是否存在。
+
+## CLI 命令
+
+```bash
+ai-rules install project [agent...] [--target .] [--force]
+ai-rules install global [agent...] [--force]
+ai-rules install all [agent...] [--target .] [--force]
+ai-rules install project --agent cursor,claude --target .
+ai-rules install project --model gemini --target .
+ai-rules sync project [--target .]
+ai-rules sync global
+ai-rules sync all [--target .]
+ai-rules doctor [--target .]
+ai-rules list
+ai-rules show core/scope.md
+ai-rules --version
+```
+
+兼容旧命令：
+
+```bash
+ai-rules cursor
+ai-rules global
+ai-rules all
+ai-rules install cursor-project --target .
+ai-rules install cursor-user
+ai-rules install opencode --target .
+```
+
+## 支持范围
+
+| Agent / 工具 | 项目级入口 | 全局入口 |
+| --- | --- | --- |
+| Cursor | `.cursor/rules/ai-coding-standards.mdc`、`.cursorrules` | `.cursor/rules/ai-coding-standards.md` |
+| OpenCode / 通用 Agent | `AGENTS.md` | `.config/opencode/AGENTS.md` |
+| Claude Code | `CLAUDE.md` | `.claude/CLAUDE.md` |
+| Gemini CLI | `GEMINI.md` | `GEMINI.md` |
+| GitHub Copilot Coding Agent | `.github/copilot-instructions.md` | 暂不提供稳定全局入口 |
+| Windsurf | `.windsurfrules` | `.windsurfrules` |
+
+说明：npm 包无法强制“任何 Agent”天然遵守规范。只有支持读取这些入口文件的 Agent 才能自动遵守；不支持规则入口机制的工具，需要手动把入口内容加入系统提示或工具配置。
 
 ## 项目结构
 
 ```txt
 ai-coding-standards/
 ├─ package.json
-│  └─ Node 包配置，声明 ai-rules 可执行命令。
 ├─ bin/
 │  └─ ai-rules.js
-│     └─ CLI 入口，负责查看规则和安装适配器。
-├─ README.md
-│  └─ 项目说明、加载策略、目录结构和维护原则。
 ├─ core/
 │  ├─ scope.md
-│  │  └─ 最高优先级范围保护规则，任何任务都必须加载。
 │  ├─ coding.md
-│  │  └─ JS / TS / Vue / React / UniApp 脚本逻辑的通用编码规则。
 │  ├─ comments.md
-│  │  └─ JS / TS、template、JSX、HTML、CSS 等代码中的注释规则。
 │  ├─ decision.md
-│  │  └─ 多方案、删除、重构、替换、兼容、扩大范围时的决策门禁。
 │  └─ review.md
-│     └─ 代码生成、代码修改、代码审查前后的自检清单。
 ├─ domains/
 │  ├─ vue.md
-│  │  └─ Vue3 组件、页面、组合式函数、状态和模板逻辑专项规则。
 │  ├─ uniapp.md
-│  │  └─ UniApp 页面、组件、跨端兼容、平台 API 和小程序规则。
 │  ├─ react.md
-│  │  └─ React 组件、Hooks、状态管理和 JSX 逻辑规则。
 │  ├─ performance.md
-│  │  └─ 性能优化、卡顿、慢查询、频繁渲染、大列表等任务规则。
 │  ├─ architecture.md
-│  │  └─ 架构设计、模块拆分、目录规划、系统边界和大规模改造规则。
 │  ├─ git.md
-│  │  └─ Git 提交、分支、合并、回滚、PR 等操作规则。
 │  ├─ interview.md
-│  │  └─ 面试题、原理解释、知识梳理类回答规则。
 │  └─ output.md
-│     └─ 任务完成后的回复结构和固定输出要求。
 └─ adapters/
    ├─ cursor/
    │  ├─ project-rules.md
-   │  │  └─ Cursor 项目级规则入口，只声明共享规则加载策略。
    │  └─ user-rules.md
-   │     └─ Cursor 用户级规则入口，只声明共享规则加载策略。
-   └─ opencode/
-      └─ AGENTS.md
-         └─ OpenCode Agent 规则入口，只声明共享规则加载策略。
+   ├─ opencode/
+   │  └─ AGENTS.md
+   ├─ claude/
+   │  └─ CLAUDE.md
+   ├─ gemini/
+   │  └─ GEMINI.md
+   ├─ copilot/
+   │  └─ copilot-instructions.md
+   └─ windsurf/
+      └─ windsurfrules
 ```
 
-## 目录职责
-
-### `core/`
-
-`core/` 存放所有项目都可复用的底线规则，优先级高于具体技术栈规则。
-
-| 文件 | 作用 | 典型加载场景 |
-| --- | --- | --- |
-| `core/scope.md` | 限制修改范围，禁止顺手改、误删、扩大影响面。 | 任何任务都加载。 |
-| `core/coding.md` | 约束脚本逻辑的编码风格、变量、分支、类型处理、命名等。 | JS / TS / 业务逻辑 / 接口 / 状态 / 组件脚本。 |
-| `core/comments.md` | 约束注释语言、注释价值、公共函数注释、复杂逻辑说明和 Magic Number 说明。 | JS / TS、Vue template、JSX、HTML、CSS 中出现注释时。 |
-| `core/decision.md` | 多方案、删除、重构、替换、兼容和扩大范围前的确认机制。 | 存在多个可行方案或高风险改动时。 |
-| `core/review.md` | 修改前后自检，避免无意义变量、重复类型转换、吞错、模板复杂表达式等问题。 | 涉及脚本逻辑的代码生成、代码修改、代码审查。 |
-
-### `domains/`
-
-`domains/` 存放按技术栈或任务场景加载的专项规则，只在任务命中时加载。
-
-当前规则分为两类：
-
-- 技术栈规则：`vue.md`、`uniapp.md`、`react.md`。
-- 任务场景规则：`performance.md`、`architecture.md`、`git.md`、`interview.md`、`output.md`。
-
-| 文件 | 作用 | 典型加载场景 |
-| --- | --- | --- |
-| `domains/vue.md` | 约束 Vue3、Composition API、Props、Emit、Computed、Watch、Template、Pinia、接口调用。 | Vue3 脚本、状态、接口、组件逻辑。 |
-| `domains/uniapp.md` | 约束 UniApp 跨端兼容、平台差异、安全区、滚动、生命周期等。 | UniApp 脚本、状态、接口、组件逻辑或跨端行为。 |
-| `domains/react.md` | 约束 React 函数组件、Hooks、Effects、状态与渲染、列表 key、JSX 注释。 | React 脚本、状态、Hooks、组件逻辑。 |
-| `domains/performance.md` | 约束性能优化必须基于现象或数据，避免无依据优化。 | 用户明确提出卡顿、慢、性能优化、频繁渲染、大列表。 |
-| `domains/architecture.md` | 约束架构方案、模块边界、迁移成本、风险说明，避免借架构名义扩大范围。 | 架构设计、模块拆分、目录规划、大规模改造讨论。 |
-| `domains/git.md` | 约束提交、分支、合并、回滚、PR、提交信息和风险操作。 | 用户明确要求 Git 操作。 |
-| `domains/interview.md` | 约束面试题和原理解释的回答结构。 | 面试、原理、知识梳理类问题。 |
-| `domains/output.md` | 约束任务完成后的回复顺序和固定结尾。 | 任务完成回复。 |
-
-### `adapters/`
-
-`adapters/` 存放不同 Agent 工具的入口文件。入口文件只负责声明“什么时候加载哪些共享规则”，不复制规则正文。
-
-| 文件 | 作用 | 使用方式 |
-| --- | --- | --- |
-| `adapters/cursor/project-rules.md` | Cursor 项目级入口。 | 放入项目级规则，约束当前仓库内的 Cursor Agent。 |
-| `adapters/cursor/user-rules.md` | Cursor 用户级入口。 | 放入用户级规则，跨项目复用这套加载策略。 |
-| `adapters/opencode/AGENTS.md` | OpenCode Agent 入口。 | 作为 OpenCode 的规则入口文件。 |
-
-## 加载关系
-
-```mermaid
-flowchart TD
-  A[用户任务] --> B[入口适配器]
-  B --> C[core/scope.md]
-  C --> D{任务类型判断}
-
-  D -->|JS / TS / 业务逻辑 / 状态 / 接口 / 组件脚本| E[core/coding.md]
-  D -->|涉及注释| F[core/comments.md]
-  D -->|template / HTML only| F
-  D -->|多方案 / 删除 / 重构 / 替换 / 兼容 / 扩大范围| G[core/decision.md]
-  D -->|脚本逻辑修改或审查| H[core/review.md]
-
-  D -->|Vue3 脚本或组件逻辑| I[domains/vue.md]
-  D -->|UniApp 跨端或平台行为| J[domains/uniapp.md + domains/vue.md]
-  D -->|React Hooks / 状态 / 组件逻辑| K[domains/react.md]
-  D -->|性能问题| L[domains/performance.md]
-  D -->|架构问题| M[domains/architecture.md]
-  D -->|Git 操作| N[domains/git.md]
-  D -->|面试或原理解释| O[domains/interview.md]
-
-  E --> P[执行任务]
-  F --> P
-  G --> P
-  H --> P
-  I --> P
-  J --> P
-  K --> P
-  L --> P
-  M --> P
-  N --> P
-  O --> P
-  P --> Q[domains/output.md]
-```
-
-## 目录设计
-
-- `core/`: 所有项目都可复用的底线规则。
-- `domains/`: 按技术栈或任务场景加载的专项规则。
-- `adapters/`: 不同 Agent 工具的入口说明，只引用共享规则，不复制规则正文。
-
-## 核心加载策略
+## 规则加载策略
 
 任何任务始终加载：
 
@@ -226,24 +243,18 @@ flowchart TD
 
 按需加载：
 
-- 涉及 JS / TS / 业务逻辑 / 接口 / 状态 / 组件脚本：`core/coding.md` 和 `core/comments.md`
-- 仅涉及 template 模板或 HTML 代码：只加载 `core/comments.md`
-- 存在多个方案、删除、重构、替换、兼容、扩大范围：`core/decision.md`
-- 代码生成、代码修改、代码审查前自检：涉及 JS / TS / 业务逻辑 / 接口 / 状态 / 组件脚本时加载 `core/review.md`
-- Vue3 且涉及脚本、状态、接口、组件逻辑：`domains/vue.md`
-- UniApp 且涉及脚本、状态、接口、组件逻辑或跨端行为：`domains/uniapp.md` 和 `domains/vue.md`
-- React 且涉及脚本、状态、Hooks、组件逻辑：`domains/react.md`
+- JS / TS / 业务逻辑 / 接口 / 状态 / 组件脚本：`core/coding.md` 和 `core/comments.md`
+- 仅 template 模板或 HTML 代码：`core/comments.md`
+- 多方案、删除、重构、替换、兼容、扩大范围：`core/decision.md`
+- 涉及脚本逻辑的代码生成、修改、审查：`core/review.md`
+- Vue3 脚本、状态、接口、组件逻辑：`domains/vue.md`
+- UniApp 脚本、状态、接口、组件逻辑或跨端行为：`domains/uniapp.md` 和 `domains/vue.md`
+- React 脚本、状态、Hooks、组件逻辑：`domains/react.md`
 - 性能优化：`domains/performance.md`
 - 架构设计：`domains/architecture.md`
 - Git 操作：`domains/git.md`
 - 面试 / 原理解释：`domains/interview.md`
 - 任务完成回复：`domains/output.md`
-
-## 可跳过场景
-
-- 纯页面视觉、纯 CSS / 样式调整、文档调整：不强制加载 `core/coding.md`，除非涉及脚本逻辑。
-- 仅修改 template 模板或 HTML 注释时，遵守 `core/comments.md` 即可。
-- 普通 Bug 修复：不默认加载 `domains/architecture.md` 或 `domains/performance.md`，除非用户明确要求。
 
 ## 优先级
 
@@ -258,7 +269,7 @@ flowchart TD
 
 ## 维护原则
 
-- 新增通用底线规则放入 `core/`。
-- 新增技术栈或场景规则放入 `domains/`。
-- Cursor / OpenCode 等工具入口只写加载策略，不复制规范正文。
-- README 中的加载策略是权威说明；修改加载策略时必须同步检查所有 `adapters/` 入口文件。
+- 通用底线规则放入 `core/`。
+- 技术栈或任务场景规则放入 `domains/`。
+- Agent 入口只声明加载策略，不复制规则正文。
+- 修改加载策略时，同步检查 `README.md` 和所有 `adapters/` 入口。

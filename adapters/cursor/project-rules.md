@@ -1,22 +1,22 @@
-Project Rules:
+项目规则：
 
-This project uses shared agent rules from the repository root.
+当前项目使用仓库根目录中的共享 Agent 规则。
 
-Always follow:
+始终遵守：
 - `core/scope.md`
 
-Conditional rules:
-- Load `core/coding.md` and `core/comments.md` when editing JS / TS / component script / business logic.
-- Load only `core/comments.md` when editing template-only or HTML-only code.
-- Load `core/decision.md` when a task involves deletion, refactor, replacement, compatibility decisions, multiple valid solutions, or expanded scope.
-- Load `core/review.md` before and after changes that involve JS / TS / component script / business logic.
-- Load `domains/vue.md` for Vue3 script, state, API, or component logic work.
-- Load `domains/uniapp.md` plus `domains/vue.md` for UniApp script, state, API, component logic, or cross-platform behavior work.
-- Load `domains/react.md` for React script, state, Hooks, or component logic work.
-- Load `domains/performance.md` only for explicit performance tasks.
-- Load `domains/architecture.md` only for explicit architecture tasks.
-- Load `domains/git.md` for Git operations.
-- Load `domains/interview.md` for interview or explanation tasks.
-- Load `domains/output.md` for final replies.
+按任务加载：
+- 编辑 JS / TS / 组件脚本 / 业务逻辑时，加载 `core/coding.md` 和 `core/comments.md`。
+- 仅编辑 template 模板或 HTML 代码时，只加载 `core/comments.md`。
+- 任务涉及删除、重构、替换、兼容决策、多个可行方案或扩大范围时，加载 `core/decision.md`。
+- 涉及 JS / TS / 组件脚本 / 业务逻辑的修改前后，加载 `core/review.md`。
+- Vue3 脚本、状态、接口或组件逻辑任务加载 `domains/vue.md`。
+- UniApp 脚本、状态、接口、组件逻辑或跨端行为任务加载 `domains/uniapp.md` 和 `domains/vue.md`。
+- React 脚本、状态、Hooks 或组件逻辑任务加载 `domains/react.md`。
+- 明确的性能优化任务加载 `domains/performance.md`。
+- 明确的架构任务加载 `domains/architecture.md`。
+- Git 操作加载 `domains/git.md`。
+- 原理解释任务加载 `domains/interview.md`。
+- 最终回复加载 `domains/output.md`。
 
-Do not copy rule text into adapter files. Update the shared files instead.
+不要把规则正文复制到适配器文件中；如需更新规则，请修改共享规则文件。

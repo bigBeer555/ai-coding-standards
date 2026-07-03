@@ -1,7 +1,7 @@
 {
   "name": "ai-front-standards",
   "version": "0.1.0",
-  "description": "Shared AI coding standards for Cursor, OpenCode and Claude Code agents.",
+  "description": "Shared AI coding standards for Cursor, OpenCode, Claude Code, Gemini CLI, Copilot and Windsurf agents.",
   "license": "MIT",
   "type": "commonjs",
   "bin": {
@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "check": "node ./bin/ai-rules.js list",
-    "test": "node ./bin/ai-rules.js --version"
+    "test": "node ./bin/ai-rules.js --version && node ./bin/ai-rules.js list && node ./bin/ai-rules.js show core/scope.md"
   },
   "engines": {
     "node": ">=18"
@@ -26,6 +26,10 @@
     "agent",
     "cursor",
     "opencode",
+    "claude-code",
+    "gemini-cli",
+    "copilot",
+    "windsurf",
     "rules",
     "coding-standards"
   ]
